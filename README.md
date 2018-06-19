@@ -62,4 +62,10 @@ docker-compose -f docker-compose-db.yml
 
 ## API
 When the application is up and running, the API documentation will be available at
-[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html).
+[http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html). An offline version of the documentation can be found at [gh-pages](https://g00glen00b.github.io/biodiversity-api/).
+
+To build the offline API docs by yourself, you can use the following Maven command:
+
+```
+mvn test swagger2markup:convertSwagger2markup asciidoctor:process
+```
