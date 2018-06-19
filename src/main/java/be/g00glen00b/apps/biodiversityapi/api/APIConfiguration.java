@@ -14,10 +14,12 @@ import static springfox.documentation.builders.PathSelectors.regex;
 @Configuration
 public class APIConfiguration {
 
+	public static final String GROUP_NAME = "biodiversity-api";
+
 	@Bean
 	public Docket docket(ApiInfo apiInfo) {
 		return new Docket(DocumentationType.SWAGGER_2)
-			.groupName("biodiversity-api")
+			.groupName(GROUP_NAME)
 			.useDefaultResponseMessages(false)
 			.apiInfo(apiInfo)
 			.select().paths(regex("/api/.*"))

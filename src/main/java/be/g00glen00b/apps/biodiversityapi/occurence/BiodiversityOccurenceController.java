@@ -20,7 +20,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
@@ -37,11 +38,11 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/biodiversity")
 @AllArgsConstructor
+@Validated
 public class BiodiversityOccurenceController {
     private GeometryFactory geometryFactory;
     private SpeciesRepository repository;
 
-    @Valid
     @GetMapping
     @Cacheable("taxonomy")
     @ApiResponses(value = {
@@ -59,14 +60,14 @@ public class BiodiversityOccurenceController {
         @RequestParam(required = false, defaultValue = "0") Double latitude,
         @ApiParam("Longitude of the position to search for species")
         @RequestParam(required = false, defaultValue = "0") Double longitude,
-        @Positive(message = "{biodiversity.bufferZoneMeters.positive}")
+        @Valid @Positive(message = "{biodiversity.bufferZoneMeters.positive}")
         @ApiParam(value = "Bufferzone added to the position to search for species", allowableValues = "range[1, infinity]")
         @RequestParam(required = false, defaultValue = "1") int bufferZoneMeters,
         @ApiParam(value = "Page number of the results, one-based", allowableValues = "range[1, infinity]")
-        @Positive(message = "{biodiversity.page.positive}")
+        @Valid @Positive(message = "{biodiversity.page.positive}")
         @RequestParam(required = false, defaultValue = "1") int page,
         @ApiParam(value = "Page limit of the results", allowableValues = "range[0, infinity]")
-        @PositiveOrZero(message = "{biodiversity.limit.positive}")
+        @Valid @PositiveOrZero(message = "{biodiversity.limit.positive}")
         @RequestParam(required = false, defaultValue = "10") int limit
     ) {
         Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
@@ -81,15 +82,16 @@ public class BiodiversityOccurenceController {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler({FactoryException.class, TransformException.class})
     public List<APIError> handleBufferException(Exception ex) {
-        return Lists.newArrayList(new APIError(new String[]{ex.getClass().getName()}, ex.getMessage()));
+        return Lists.newArrayList(new APIError(new String[] {ex.getClass().getName()}, ex.getMessage()));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public List<APIError> handleValidationException(MethodArgumentNotValidException ex) {
-        return ex.getBindingResult()
-            .getAllErrors().stream()
-            .map(error -> new APIError(error.getCodes(), error.getDefaultMessage()))
+    @ExceptionHandler(ConstraintViolationException.class)
+    public List<APIError> handleValidationException(ConstraintViolationException ex) {
+        return ex.getConstraintViolations().stream()
+            .map(violation -> new APIError(
+                new String[] {violation.getPropertyPath().toString()},
+                violation.getMessage()))
             .collect(Collectors.toList());
     }
 }

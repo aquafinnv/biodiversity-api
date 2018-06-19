@@ -13,14 +13,13 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.Arrays;
 import java.util.List;
 
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "TAXONOMY")
+@Table(name = "SPECIES")
 @ToString(exclude = "occurences")
 public class Species {
     @Id
