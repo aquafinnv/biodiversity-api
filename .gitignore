@@ -1,0 +1,6 @@
+target/
+datasets/
+database/
+.idea/
+*.iml
+.env
