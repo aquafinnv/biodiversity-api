@@ -134,7 +134,7 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>test</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>convertSwagger2markup</goal>
                         </goals>
@@ -171,7 +171,7 @@
                 <executions>
                     <execution>
                         <id>output-html</id>
-                        <phase>test</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>process-asciidoc</goal>
                         </goals>
