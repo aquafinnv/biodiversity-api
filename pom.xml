@@ -110,6 +110,7 @@
                         <goals>
                             <goal>build</goal>
                         </goals>
+                        <phase>none</phase>
                     </execution>
                 </executions>
                 <configuration>
@@ -134,7 +135,7 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <phase>prepare-package</phase>
+                        <phase>none</phase>
                         <goals>
                             <goal>convertSwagger2markup</goal>
                         </goals>
@@ -171,7 +172,7 @@
                 <executions>
                     <execution>
                         <id>output-html</id>
-                        <phase>prepare-package</phase>
+                        <phase>none</phase>
                         <goals>
                             <goal>process-asciidoc</goal>
                         </goals>

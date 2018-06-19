@@ -1,6 +1,6 @@
 language: java
 
-install: mvn clean package
+install: mvn clean package swagger2markup:convertSwagger2markup asciidoctor:process-asciidoc
 
 deploy:
   provider: pages

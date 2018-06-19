@@ -17,7 +17,7 @@ might take a while, so be prepared. When downloaded, place them inside a folder 
 To build the application, you can use the following command:
 
 ```
-mvn package
+mvn package dockerfile:build
 ```
 
 This command will build the Java application into a JAR file, and create a Docker image.
