@@ -193,7 +193,6 @@
             <id>osgeo</id>
             <name>OSGeo</name>
             <url>http://download.osgeo.org/webdav/geotools/</url>
-            </snapshots>
         </repository>
     </repositories>
 
