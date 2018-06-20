@@ -1,4 +1,4 @@
-# Biodiversity API
+# Biodiversity API [![Build Status](https://travis-ci.org/g00glen00b/biodiversity-api.svg?branch=master)](https://travis-ci.org/g00glen00b/biodiversity-api)
 
 ## What is this?
 The biodiversity API is a small webservice built with Spring boot, which will import [GBIF datasets](http://gbif.org)

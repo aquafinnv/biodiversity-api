@@ -159,7 +159,7 @@
                     <backend>html5</backend>
                     <outputDirectory>${project.build.directory}/generated-sources/swagger-html/</outputDirectory>
                     <attributes>
-                        <toc>macro</toc>
+                        <toc>left</toc>
                         <toclevels>3</toclevels>
                         <generated>${project.build.directory}/generated-sources/swagger/</generated>
                     </attributes>
