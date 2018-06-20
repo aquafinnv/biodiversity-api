@@ -2,7 +2,6 @@ package be.g00glen00b.apps.biodiversityapi.occurence;
 
 import be.g00glen00b.apps.biodiversityapi.taxonomy.Species;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -34,8 +33,4 @@ public class BiodiversityOccurence {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "SCIENTIFIC_NAME")
     private Species species;
-
-    public boolean containsLocation() {
-        return getCenter() != null;
-    }
 }

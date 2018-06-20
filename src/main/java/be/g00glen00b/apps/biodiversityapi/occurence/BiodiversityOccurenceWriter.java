@@ -10,6 +10,7 @@ import org.springframework.batch.item.ItemWriter;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
 
@@ -27,7 +28,7 @@ public class BiodiversityOccurenceWriter implements ItemWriter<BiodiversityOccur
 	@Override
 	public void write(List<? extends BiodiversityOccurence> occurences) {
 		updateOccurrences(occurences);
-		repository.saveAll(occurences.stream().filter(BiodiversityOccurence::containsLocation).collect(toList()));
+		repository.saveAll(occurences.stream().filter(Objects::nonNull).collect(toList()));
 	}
 
 	private int updateOccurrences(List<? extends BiodiversityOccurence> occurences) {

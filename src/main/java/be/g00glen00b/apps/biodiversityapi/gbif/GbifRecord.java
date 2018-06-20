@@ -25,4 +25,8 @@ public class GbifRecord {
     private Integer individualCount;
     private String license;
     private String institutionCode;
+
+    public boolean hasCoordinates() {
+        return getDecimalLatitude() != null && getDecimalLongitude() != null;
+    }
 }

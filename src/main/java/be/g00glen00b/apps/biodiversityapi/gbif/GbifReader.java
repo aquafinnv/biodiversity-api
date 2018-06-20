@@ -49,6 +49,7 @@ public class GbifReader extends MultiResourceItemReader<GbifRecord> {
         FlatFileItemReader<GbifRecord> delegate = new FlatFileItemReader<>();
         delegate.setLinesToSkip(1);
         delegate.setLineMapper(getLineMapper());
+        delegate.setStrict(false);
         return delegate;
     }
 

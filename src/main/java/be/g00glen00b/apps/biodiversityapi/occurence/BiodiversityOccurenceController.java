@@ -13,7 +13,12 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import io.swagger.annotations.ResponseHeader;
 import lombok.AllArgsConstructor;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -58,9 +63,9 @@ public class BiodiversityOccurenceController {
     @ResponseHeader(name = "X-Page-Total-Results", description = "Total number of results that match the given search criteria", response = Long.class)
     public ResponseEntity<List<Species>> findAll(
         @ApiParam("Latitude of the position to search for species")
-        @RequestParam(required = false, defaultValue = "0") Double latitude,
+        @RequestParam double latitude,
         @ApiParam("Longitude of the position to search for species")
-        @RequestParam(required = false, defaultValue = "0") Double longitude,
+        @RequestParam double longitude,
         @Valid @Positive(message = "{biodiversity.bufferZoneMeters.positive}")
         @ApiParam(value = "Bufferzone added to the position to search for species", allowableValues = "range[1, infinity]")
         @RequestParam(required = false, defaultValue = "1") int bufferZoneMeters,
@@ -72,9 +77,9 @@ public class BiodiversityOccurenceController {
         @ApiParam(value = "Page limit of the results", allowableValues = "range[0, infinity]")
         @Valid @PositiveOrZero(message = "{biodiversity.limit.positive}")
         @RequestParam(required = false, defaultValue = "10") int limit
-    ) {
+    ) throws FactoryException, TransformException {
         Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
-        Page<Species> result = findNearby(point.buffer(bufferZoneMeters), localName, PageRequest.of(page, limit));
+        Page<Species> result = findNearby(getBuffer(point, bufferZoneMeters), localName, PageRequest.of(page, limit));
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Page-Total-Results", String.valueOf(result.getTotalElements()));
         headers.add("X-Page-Nr", String.valueOf(page));
@@ -100,9 +105,18 @@ public class BiodiversityOccurenceController {
 
     private Page<Species> findNearby(Geometry buffer, boolean localName, PageRequest pageRequest) {
         if (localName) {
-            return repository.findNearby(buffer, pageRequest);
-        } else {
             return repository.findNearbyWithVernacularName(buffer, pageRequest);
+        } else {
+            return repository.findNearby(buffer, pageRequest);
         }
+    }
+
+    private Geometry getBuffer(Point point, int bufferZone) throws FactoryException, TransformException {
+        CoordinateReferenceSystem reference = CRS.decode("AUTO:42001," + point.getX() + "," + point.getY());
+        MathTransform toTransform = CRS.findMathTransform(DefaultGeographicCRS.WGS84, reference);
+        MathTransform fromTransform = CRS.findMathTransform(reference, DefaultGeographicCRS.WGS84);
+        Geometry center = JTS.transform(point, toTransform);
+        Geometry buffer = center.buffer(bufferZone);
+        return JTS.transform(buffer, fromTransform);
     }
 }

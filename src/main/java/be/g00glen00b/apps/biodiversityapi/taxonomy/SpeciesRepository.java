@@ -10,12 +10,12 @@ import org.springframework.data.repository.query.Param;
 
 public interface SpeciesRepository extends JpaRepository<Species, String> {
     @Query("select distinct t from Species t " +
-        "inner join t.occurences o " +
+        "inner join t.occurrences o " +
         "where within(o.center, :buffer) = true")
     Page<Species> findNearby(@Param("buffer") Geometry buffer, Pageable pageable);
 
     @Query("select distinct t from Species t " +
-        "inner join t.occurences o " +
-        "where within(o.center, :buffer) = true and t.vernacularName is not null")
+        "inner join t.occurrences o " +
+        "where within(o.center, :buffer) = true and t.vernacularName is not null and t.vernacularName <> ''")
     Page<Species> findNearbyWithVernacularName(@Param("buffer") Geometry buffer, Pageable pageable);
 }

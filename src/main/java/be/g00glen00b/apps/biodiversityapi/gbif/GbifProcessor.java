@@ -20,14 +20,18 @@ public class GbifProcessor implements ItemProcessor<GbifRecord, BiodiversityOccu
 
     @Override
     public BiodiversityOccurence process(GbifRecord gbifRecord) {
-        return new BiodiversityOccurence(
-            gbifRecord.getGbifID(),
-            gbifRecord.getDatasetName(),
-            geometryFactory.createPoint(new Coordinate(
-                gbifRecord.getDecimalLongitude(),
-                gbifRecord.getDecimalLatitude()
-            )),
-            getSpecies(gbifRecord));
+        if (gbifRecord.hasCoordinates()) {
+            return new BiodiversityOccurence(
+                gbifRecord.getGbifID(),
+                gbifRecord.getDatasetName(),
+                geometryFactory.createPoint(new Coordinate(
+                    gbifRecord.getDecimalLongitude(),
+                    gbifRecord.getDecimalLatitude()
+                )),
+                getSpecies(gbifRecord));
+        } else {
+            return null;
+        }
     }
 
     private Species getSpecies(GbifRecord gbifRecord) {
