@@ -8,6 +8,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import lombok.AllArgsConstructor;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 
@@ -31,6 +32,7 @@ public class GbifProcessor implements ItemProcessor<GbifRecord, BiodiversityOccu
 
     private Species getSpecies(GbifRecord gbifRecord) {
         return repository.findById(gbifRecord.getScientificName())
+            .map(species -> saveWithName(species, gbifRecord))
             .orElseGet(() -> repository.saveAndFlush(new Species(
                 gbifRecord.getScientificName(),
                 gbifRecord.getVernacularName(),
@@ -42,5 +44,14 @@ public class GbifProcessor implements ItemProcessor<GbifRecord, BiodiversityOccu
                 gbifRecord.getGenus(),
                 gbifRecord.getSubgenus(),
                 new ArrayList<>())));
+    }
+
+    private Species saveWithName(Species species, GbifRecord gbifRecord) {
+        if (StringUtils.isEmpty(species.getVernacularName()) && !StringUtils.isEmpty(gbifRecord.getVernacularName())) {
+            species.setVernacularName(gbifRecord.getVernacularName());
+            return repository.saveAndFlush(species);
+        } else {
+            return species;
+        }
     }
 }

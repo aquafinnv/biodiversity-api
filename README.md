@@ -67,3 +67,9 @@ The project is built on [Travis CI](https://travis-ci.org/g00glen00b/biodiversit
 When the application is up and running, the API documentation will be available at
 [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html). Additionally to that, you can also find
 the documentation at [gh-pages](http://g00glen00b.github.io/biodiversity-api).
+
+The documentation is automatically generated using the following command:
+
+```
+mvn test swagger2markup:convertSwagger2markup asciidoctor:process-asciidoc
+```

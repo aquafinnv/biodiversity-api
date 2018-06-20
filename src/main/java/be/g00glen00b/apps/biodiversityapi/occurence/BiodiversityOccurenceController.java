@@ -5,6 +5,7 @@ import be.g00glen00b.apps.biodiversityapi.taxonomy.Species;
 import be.g00glen00b.apps.biodiversityapi.taxonomy.SpeciesRepository;
 import com.google.common.collect.Lists;
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import io.swagger.annotations.ApiParam;
@@ -63,6 +64,8 @@ public class BiodiversityOccurenceController {
         @Valid @Positive(message = "{biodiversity.bufferZoneMeters.positive}")
         @ApiParam(value = "Bufferzone added to the position to search for species", allowableValues = "range[1, infinity]")
         @RequestParam(required = false, defaultValue = "1") int bufferZoneMeters,
+        @ApiParam(value = "Enkel resultaten terug krijgen met lokale naam")
+        @RequestParam(required = false, defaultValue = "true") boolean localName,
         @ApiParam(value = "Page number of the results, one-based", allowableValues = "range[1, infinity]")
         @Valid @Positive(message = "{biodiversity.page.positive}")
         @RequestParam(required = false, defaultValue = "1") int page,
@@ -71,7 +74,7 @@ public class BiodiversityOccurenceController {
         @RequestParam(required = false, defaultValue = "10") int limit
     ) {
         Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
-        Page<Species> result = repository.findNearby(point.buffer(bufferZoneMeters), PageRequest.of(page, limit));
+        Page<Species> result = findNearby(point.buffer(bufferZoneMeters), localName, PageRequest.of(page, limit));
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Page-Total-Results", String.valueOf(result.getTotalElements()));
         headers.add("X-Page-Nr", String.valueOf(page));
@@ -93,5 +96,13 @@ public class BiodiversityOccurenceController {
                 new String[] {violation.getPropertyPath().toString()},
                 violation.getMessage()))
             .collect(Collectors.toList());
+    }
+
+    private Page<Species> findNearby(Geometry buffer, boolean localName, PageRequest pageRequest) {
+        if (localName) {
+            return repository.findNearby(buffer, pageRequest);
+        } else {
+            return repository.findNearbyWithVernacularName(buffer, pageRequest);
+        }
     }
 }

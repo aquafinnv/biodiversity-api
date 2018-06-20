@@ -22,7 +22,7 @@ public class BiodiversityOccurenceLogger implements JobExecutionListener {
 
 	@Override
 	public void afterJob(JobExecution jobExecution) {
-		logger.info("Registered {} occurences", repository.count());
+		logger.info("Registered {} occurrences", repository.count());
 		logger.info("Registered {} different species", speciesRepository.count());
 	}
 }

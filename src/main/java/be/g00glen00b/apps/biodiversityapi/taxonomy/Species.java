@@ -20,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "SPECIES")
-@ToString(exclude = "occurences")
+@ToString(exclude = "occurrences")
 public class Species {
     @Id
     @Column(name = "SCIENTIFIC_NAME")
@@ -48,12 +48,12 @@ public class Species {
     @JsonIgnore
     @Column(name = "SUBGENUS")
     private String subgenus;
-    @OneToMany(mappedBy = "species")
     @JsonIgnore
-    private List<BiodiversityOccurence> occurences;
+    @OneToMany(mappedBy = "species")
+    private List<BiodiversityOccurence> occurrences;
 
-    public List<String> getTaxonomy() {
-        return Lists.newArrayList(
+    public Taxonomy getTaxonomy() {
+        return new Taxonomy(
             getKingdom(),
             getPhylum(),
             getSpeciesClass(),
