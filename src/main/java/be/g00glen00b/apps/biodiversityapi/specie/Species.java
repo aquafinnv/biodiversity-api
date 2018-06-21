@@ -1,8 +1,7 @@
-package be.g00glen00b.apps.biodiversityapi.taxonomy;
+package be.g00glen00b.apps.biodiversityapi.specie;
 
 import be.g00glen00b.apps.biodiversityapi.occurence.BiodiversityOccurence;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.google.common.collect.Lists;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

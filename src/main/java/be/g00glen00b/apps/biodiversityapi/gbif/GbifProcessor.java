@@ -1,8 +1,8 @@
 package be.g00glen00b.apps.biodiversityapi.gbif;
 
 import be.g00glen00b.apps.biodiversityapi.occurence.BiodiversityOccurence;
-import be.g00glen00b.apps.biodiversityapi.taxonomy.Species;
-import be.g00glen00b.apps.biodiversityapi.taxonomy.SpeciesRepository;
+import be.g00glen00b.apps.biodiversityapi.specie.Species;
+import be.g00glen00b.apps.biodiversityapi.specie.SpeciesRepository;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import lombok.AllArgsConstructor;

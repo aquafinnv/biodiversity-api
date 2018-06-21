@@ -1,6 +1,6 @@
 package be.g00glen00b.apps.biodiversityapi.occurence;
 
-import be.g00glen00b.apps.biodiversityapi.taxonomy.SpeciesRepository;
+import be.g00glen00b.apps.biodiversityapi.specie.SpeciesRepository;
 import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

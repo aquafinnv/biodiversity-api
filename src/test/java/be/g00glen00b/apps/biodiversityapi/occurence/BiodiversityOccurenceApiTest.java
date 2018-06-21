@@ -1,7 +1,7 @@
 package be.g00glen00b.apps.biodiversityapi.occurence;
 
 import be.g00glen00b.apps.biodiversityapi.api.APIConfiguration;
-import be.g00glen00b.apps.biodiversityapi.taxonomy.SpeciesRepository;
+import be.g00glen00b.apps.biodiversityapi.specie.SpeciesRepository;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;

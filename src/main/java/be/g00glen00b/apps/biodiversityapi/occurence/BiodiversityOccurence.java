@@ -1,6 +1,6 @@
 package be.g00glen00b.apps.biodiversityapi.occurence;
 
-import be.g00glen00b.apps.biodiversityapi.taxonomy.Species;
+import be.g00glen00b.apps.biodiversityapi.specie.Species;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.vividsolutions.jts.geom.Point;
 import lombok.AllArgsConstructor;

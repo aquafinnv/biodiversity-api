@@ -1,4 +1,4 @@
-package be.g00glen00b.apps.biodiversityapi.taxonomy;
+package be.g00glen00b.apps.biodiversityapi.specie;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

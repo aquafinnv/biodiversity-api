@@ -1,8 +1,9 @@
 package be.g00glen00b.apps.biodiversityapi.occurence;
 
 import be.g00glen00b.apps.biodiversityapi.api.APIError;
-import be.g00glen00b.apps.biodiversityapi.taxonomy.Species;
-import be.g00glen00b.apps.biodiversityapi.taxonomy.SpeciesRepository;
+import be.g00glen00b.apps.biodiversityapi.specie.Species;
+import be.g00glen00b.apps.biodiversityapi.specie.SpeciesKingdom;
+import be.g00glen00b.apps.biodiversityapi.specie.SpeciesRepository;
 import com.google.common.collect.Lists;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -50,7 +51,7 @@ public class BiodiversityOccurenceController {
     private SpeciesRepository repository;
 
     @GetMapping
-    @Cacheable("taxonomy")
+    @Cacheable("species")
     @ApiResponses(value = {
         @ApiResponse(code = 200, message = "Success", response = Species[].class, responseHeaders = {
             @ResponseHeader(name = "X-Page-Total-Results", description = "Total number of species matching the given search criteria", response = Long.class),
@@ -87,6 +88,46 @@ public class BiodiversityOccurenceController {
         return new ResponseEntity<>(result.getContent(), headers, HttpStatus.OK);
     }
 
+    @GetMapping("/{kingdom}")
+    @Cacheable("species")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Success", response = Species[].class, responseHeaders = {
+            @ResponseHeader(name = "X-Page-Total-Results", description = "Total number of species matching the given search criteria", response = Long.class),
+            @ResponseHeader(name = "X-Page-Nr", description = "The page number used to fetch the results", response = Integer.class),
+            @ResponseHeader(name = "X-Page-Limit", description = "The page limit used to fetch the results", response = Integer.class)
+        }),
+        @ApiResponse(code = 400, message = "Bad request", response = APIError[].class),
+        @ApiResponse(code = 500, message = "Internal Server Error", response = APIError[].class)
+    })
+    @ResponseHeader(name = "X-Page-Total-Results", description = "Total number of results that match the given search criteria", response = Long.class)
+    public ResponseEntity<List<Species>> findAll(
+        @ApiParam("Name of the kingdom")
+        @RequestParam SpeciesKingdom kingdom,
+        @ApiParam("Latitude of the position to search for species")
+        @RequestParam double latitude,
+        @ApiParam("Longitude of the position to search for species")
+        @RequestParam double longitude,
+        @Valid @Positive(message = "{biodiversity.bufferZoneMeters.positive}")
+        @ApiParam(value = "Bufferzone added to the position to search for species", allowableValues = "range[1, infinity]")
+        @RequestParam(required = false, defaultValue = "1") int bufferZoneMeters,
+        @ApiParam(value = "Enkel resultaten terug krijgen met lokale naam")
+        @RequestParam(required = false, defaultValue = "true") boolean localName,
+        @ApiParam(value = "Page number of the results, one-based", allowableValues = "range[1, infinity]")
+        @Valid @Positive(message = "{biodiversity.page.positive}")
+        @RequestParam(required = false, defaultValue = "1") int page,
+        @ApiParam(value = "Page limit of the results", allowableValues = "range[0, infinity]")
+        @Valid @PositiveOrZero(message = "{biodiversity.limit.positive}")
+        @RequestParam(required = false, defaultValue = "10") int limit
+    ) throws FactoryException, TransformException {
+        Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
+        Page<Species> result = findNearby(getBuffer(point, bufferZoneMeters), kingdom, localName, PageRequest.of(page, limit));
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-Page-Total-Results", String.valueOf(result.getTotalElements()));
+        headers.add("X-Page-Nr", String.valueOf(page));
+        headers.add("X-Page-Limit", String.valueOf(limit));
+        return new ResponseEntity<>(result.getContent(), headers, HttpStatus.OK);
+    }
+
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler({FactoryException.class, TransformException.class})
     public List<APIError> handleBufferException(Exception ex) {
@@ -108,6 +149,14 @@ public class BiodiversityOccurenceController {
             return repository.findNearbyWithVernacularName(buffer, pageRequest);
         } else {
             return repository.findNearby(buffer, pageRequest);
+        }
+    }
+
+    private Page<Species> findNearby(Geometry buffer, SpeciesKingdom kingdom, boolean localName, PageRequest pageRequest) {
+        if (localName) {
+            return repository.findNearbyWithVernacularName(buffer, kingdom.getScientificName(), pageRequest);
+        } else {
+            return repository.findNearby(buffer, kingdom.getScientificName(), pageRequest);
         }
     }
 
