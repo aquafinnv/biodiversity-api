@@ -10,7 +10,7 @@ To use the application, you need to have [Docker](https://docker.com) installed.
 
 > **Note**: Downloading these datasets might take a while and can be quite large, so be prepared.
 
-After downloading these datasets, place them inside a folder called **datasets/**.
+After downloading these datasets, unzip them and place the folder inside a folder called **datasets/**.
 
 Additionally to that, you also have to create a file called `.env` and add the following properties:
 
