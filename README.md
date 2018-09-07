@@ -1,26 +1,16 @@
-# Biodiversity API [![Build Status](https://travis-ci.org/g00glen00b/biodiversity-api.svg?branch=master)](https://travis-ci.org/g00glen00b/biodiversity-api)
+# Biodiversity API [![Build Status](https://travis-ci.org/g00glen00b/biodiversity-api.svg?branch=master)](https://travis-ci.org/g00glen00b/biodiversity-api) [![License](https://img.shields.io/github/license/g00glen00b/biodiversity-api.svg)](https://github.com/g00glen00b/biodiversity-api/blob/master/LICENSE)
 
 ## What is this?
 The biodiversity API is a small webservice built with Spring boot, which will import [GBIF datasets](http://gbif.org)
 and allow spatial queries to see if there is any of the imported species nearby.
 
-
 ## Installation
-To install the application, you need to have either [Maven 3](https://maven.apache.org) installed, or you need to use
-the local Maven wrapper (`./mvnw`). Additionally to that, it's recommended to use [Docker](https://www.docker.com/) to
-run the application.
 
-Since the application uses GBIF datasets from [gbif.org](http://gbif.org), you need to download some datasets first.
-Sign up for an account and download the datasets using the **Darwin Core Archive** format. Downloading these datasets
-might take a while, so be prepared. When downloaded, place them inside a folder called **datasets/**.
+To use the application, you need to have [Docker](https://docker.com) installed. Additionally to that, you have to download GBIF datasets from [gbif.org](https://gbif.org). Sign up for an account and download the datasets using the **Darwin Core Archive** format.
 
-To build the application, you can use the following command:
+> **Note**: Downloading these datasets might take a while and can be quite large, so be prepared.
 
-```
-mvn package dockerfile:build
-```
-
-This command will build the Java application into a JAR file, and create a Docker image.
+After downloading these datasets, unzip them and place the folder inside a folder called **datasets/**.
 
 Additionally to that, you also have to create a file called `.env` and add the following properties:
 
@@ -48,12 +38,23 @@ Once the application runs, it will start to import the datasets. This can take a
 If you use a separate volume for your database container, you can disable running the batch the next time you start by
 setting the `SPRING_BATCH_JOB_ENABLED=false` environment property within `docker-compose.yml`.
 
+## Development
 
-If you want to run the Java application directly, you can configure the `SPRING_DATASOURCE_URL`,
-`SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD` and `API_GBIF_LOCATION_PATTERN` environment variables
-locally.
+For development, it's recommended to have either [Maven 3](https://maven.apache.org) installed, or you need to use
+the local Maven wrapper (`./mvnw`). After that, you can build the Docker image using the following command:
 
-You can also run Docker compose to run only the database:
+```
+mvn package dockerfile:build
+```
+
+If you want to run the Java application directly, rather than using the Docker image, you'll have to configure the following environment variables manually:
+
+- `SPRING_DATASOURCE_URL`
+- `SPRING_DATASOURCE_USERNAME`
+- `SPRING_DATASOURCE_PASSWORD`
+- `API_GBIF_LOCATION_PATTERN`
+
+For convenience, you can also use the following command to only run the database as a Docker container:
 
 ```
 docker-compose -f docker-compose-db.yml
