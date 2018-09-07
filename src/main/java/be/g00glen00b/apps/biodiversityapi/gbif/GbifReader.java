@@ -66,8 +66,8 @@ public class GbifReader extends MultiResourceItemReader<GbifRecord> {
         return fieldSetMapper;
     }
 
-    private DelimitedLineTokenizer getTokenizer() {
-        DelimitedLineTokenizer tokenizer = new DelimitedLineTokenizer(DelimitedLineTokenizer.DELIMITER_TAB);
+    private GbifTokenizer getTokenizer() {
+        GbifTokenizer tokenizer = new GbifTokenizer(DelimitedLineTokenizer.DELIMITER_TAB);
         tokenizer.setIncludedFields(
             GBIF_ID_POSITION,
             LICENSE_POSITION,
