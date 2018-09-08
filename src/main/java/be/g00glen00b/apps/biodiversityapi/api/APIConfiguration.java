@@ -32,7 +32,7 @@ public class APIConfiguration {
         return new ApiInfoBuilder()
             .title("Biodiversity API")
             .description("API for fetching biodiversity related information about the environment")
-            .version("1.0.1")
+            .version("1.0.2")
             .build();
     }
 
