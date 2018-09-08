@@ -1,6 +1,7 @@
 package be.g00glen00b.apps.biodiversityapi.occurence;
 
 import be.g00glen00b.apps.biodiversityapi.api.APIError;
+import be.g00glen00b.apps.biodiversityapi.media.MediaService;
 import be.g00glen00b.apps.biodiversityapi.specie.Species;
 import be.g00glen00b.apps.biodiversityapi.specie.SpeciesKingdom;
 import be.g00glen00b.apps.biodiversityapi.specie.SpeciesRepository;
@@ -40,6 +41,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -47,8 +50,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Validated
 public class BiodiversityOccurenceController {
-    private GeometryFactory geometryFactory;
-    private SpeciesRepository repository;
+    private BiodiversityService service;
 
     @GetMapping
     @Cacheable("species")
@@ -62,7 +64,7 @@ public class BiodiversityOccurenceController {
         @ApiResponse(code = 500, message = "Internal Server Error", response = APIError[].class)
     })
     @ResponseHeader(name = "X-Page-Total-Results", description = "Total number of results that match the given search criteria", response = Long.class)
-    public ResponseEntity<List<Species>> findAll(
+    public ResponseEntity<List<BiodiversityOccurenceDTO>> findAll(
         @ApiParam("Latitude of the position to search for species")
         @RequestParam double latitude,
         @ApiParam("Longitude of the position to search for species")
@@ -79,13 +81,12 @@ public class BiodiversityOccurenceController {
         @Valid @PositiveOrZero(message = "{biodiversity.limit.positive}")
         @RequestParam(required = false, defaultValue = "10") int limit
     ) throws FactoryException, TransformException {
-        Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
-        Page<Species> result = findNearby(getBuffer(point, bufferZoneMeters), localName, PageRequest.of(page, limit));
+        BiodiversityOccurenceDTOWrapper result = service.findAll(latitude, longitude, bufferZoneMeters, localName, page, limit);
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Page-Total-Results", String.valueOf(result.getTotalElements()));
         headers.add("X-Page-Nr", String.valueOf(page));
         headers.add("X-Page-Limit", String.valueOf(limit));
-        return new ResponseEntity<>(result.getContent(), headers, HttpStatus.OK);
+        return new ResponseEntity<>(result.getOccurences(), headers, HttpStatus.OK);
     }
 
     @GetMapping("/{kingdom}")
@@ -100,7 +101,7 @@ public class BiodiversityOccurenceController {
         @ApiResponse(code = 500, message = "Internal Server Error", response = APIError[].class)
     })
     @ResponseHeader(name = "X-Page-Total-Results", description = "Total number of results that match the given search criteria", response = Long.class)
-    public ResponseEntity<List<Species>> findAll(
+    public ResponseEntity<List<BiodiversityOccurenceDTO>> findAll(
         @ApiParam("Name of the kingdom")
         @RequestParam SpeciesKingdom kingdom,
         @ApiParam("Latitude of the position to search for species")
@@ -119,13 +120,12 @@ public class BiodiversityOccurenceController {
         @Valid @PositiveOrZero(message = "{biodiversity.limit.positive}")
         @RequestParam(required = false, defaultValue = "10") int limit
     ) throws FactoryException, TransformException {
-        Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
-        Page<Species> result = findNearby(getBuffer(point, bufferZoneMeters), kingdom, localName, PageRequest.of(page, limit));
+        BiodiversityOccurenceDTOWrapper result = service.findAll(latitude, longitude, bufferZoneMeters, localName, kingdom, page, limit);
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Page-Total-Results", String.valueOf(result.getTotalElements()));
         headers.add("X-Page-Nr", String.valueOf(page));
         headers.add("X-Page-Limit", String.valueOf(limit));
-        return new ResponseEntity<>(result.getContent(), headers, HttpStatus.OK);
+        return new ResponseEntity<>(result.getOccurences(), headers, HttpStatus.OK);
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -142,30 +142,5 @@ public class BiodiversityOccurenceController {
                 new String[] {violation.getPropertyPath().toString()},
                 violation.getMessage()))
             .collect(Collectors.toList());
-    }
-
-    private Page<Species> findNearby(Geometry buffer, boolean localName, PageRequest pageRequest) {
-        if (localName) {
-            return repository.findNearbyWithVernacularName(buffer, pageRequest);
-        } else {
-            return repository.findNearby(buffer, pageRequest);
-        }
-    }
-
-    private Page<Species> findNearby(Geometry buffer, SpeciesKingdom kingdom, boolean localName, PageRequest pageRequest) {
-        if (localName) {
-            return repository.findNearbyWithVernacularName(buffer, kingdom.getScientificName(), pageRequest);
-        } else {
-            return repository.findNearby(buffer, kingdom.getScientificName(), pageRequest);
-        }
-    }
-
-    private Geometry getBuffer(Point point, int bufferZone) throws FactoryException, TransformException {
-        CoordinateReferenceSystem reference = CRS.decode("AUTO:42001," + point.getX() + "," + point.getY());
-        MathTransform toTransform = CRS.findMathTransform(DefaultGeographicCRS.WGS84, reference);
-        MathTransform fromTransform = CRS.findMathTransform(reference, DefaultGeographicCRS.WGS84);
-        Geometry center = JTS.transform(point, toTransform);
-        Geometry buffer = center.buffer(bufferZone);
-        return JTS.transform(buffer, fromTransform);
     }
 }
