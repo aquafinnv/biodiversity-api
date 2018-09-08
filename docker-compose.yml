@@ -11,7 +11,7 @@ services:
     volumes:
       - ./database/:/var/lib/mysql/
   biodiversity-api:
-    image: g00glen00b/biodiversity-api:1.0.1
+    image: g00glen00b/biodiversity-api:1.0.2
     depends_on:
       - spatial-db
     ports:

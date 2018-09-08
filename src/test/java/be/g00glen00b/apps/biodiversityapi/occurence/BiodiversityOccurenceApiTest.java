@@ -27,7 +27,7 @@ public class BiodiversityOccurenceApiTest {
 	@Autowired
 	private MockMvc mockMvc;
 	@MockBean
-	private SpeciesRepository speciesRepository;
+	private BiodiversityService service;
 
 	@Test
 	public void swaggerJsonExists() throws Exception {
