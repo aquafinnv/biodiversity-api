@@ -23,6 +23,6 @@ services:
       - SPRING_DATASOURCE_USERNAME=${DATABASE_USER}
       - SPRING_DATASOURCE_PASSWORD=${DATABASE_PASSWORD}
       - API_GBIF_LOCATION_PATTERN=file:/datasets/*/occurrence.txt
-      - SPRING_BATCH_JOB_ENABLED=false
+      - SPRING_BATCH_JOB_ENABLED=true
     volumes:
       - ./datasets/:/datasets/

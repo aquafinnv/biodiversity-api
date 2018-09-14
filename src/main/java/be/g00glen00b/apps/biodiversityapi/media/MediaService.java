@@ -3,9 +3,11 @@ package be.g00glen00b.apps.biodiversityapi.media;
 import be.g00glen00b.apps.biodiversityapi.specie.Species;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -29,7 +31,7 @@ public class MediaService {
             .queryParam("prop", "pageimages")
             .queryParam("format", "json")
             .build().toUriString();
-        return restTemplate
+        return CollectionUtils.isEmpty(species) ? new HashMap<>() : restTemplate
             .getForObject(url, MediaResult.class)
             .getQuery().getPages()
             .values().stream()

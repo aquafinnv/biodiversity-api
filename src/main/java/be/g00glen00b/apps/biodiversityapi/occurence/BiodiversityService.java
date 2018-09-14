@@ -1,15 +1,12 @@
 package be.g00glen00b.apps.biodiversityapi.occurence;
 
 import be.g00glen00b.apps.biodiversityapi.media.MediaService;
-import be.g00glen00b.apps.biodiversityapi.specie.Species;
 import be.g00glen00b.apps.biodiversityapi.specie.SpeciesDTO;
 import be.g00glen00b.apps.biodiversityapi.specie.SpeciesKingdom;
-import be.g00glen00b.apps.biodiversityapi.specie.SpeciesRepository;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
-import io.swagger.annotations.ApiParam;
 import lombok.AllArgsConstructor;
 import org.geotools.geometry.jts.JTS;
 import org.geotools.referencing.CRS;
@@ -20,15 +17,9 @@ import org.opengis.referencing.operation.MathTransform;
 import org.opengis.referencing.operation.TransformException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -51,6 +42,12 @@ public class BiodiversityService {
         Point point = geometryFactory.createPoint(new Coordinate(longitude, latitude));
         Page<BiodiversityOccurence> result = findNearby(getBuffer(point, bufferZoneMeters), kingdom, localName, PageRequest.of(page, limit));
         return new BiodiversityOccurenceDTOWrapper(findDTOs(result.getContent()), page, limit, result.getTotalElements());
+    }
+
+    public BiodiversityOccurenceDTO findOne(Long id) {
+        BiodiversityOccurence entity = repository.findById(id).orElseThrow(BiodiversityNotFoundException::new);
+        Map<String, Optional<String>> media = mediaService.getMedia(Collections.singletonList(entity.getSpecies()));
+        return findDTO(entity, media);
     }
 
     private Page<BiodiversityOccurence> findNearby(Geometry buffer, boolean localName, PageRequest pageRequest) {

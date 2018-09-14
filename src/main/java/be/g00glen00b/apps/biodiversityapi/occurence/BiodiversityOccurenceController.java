@@ -32,6 +32,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -57,7 +58,7 @@ public class BiodiversityOccurenceController {
     @GetMapping
     @Cacheable("species")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success", response = Species[].class, responseHeaders = {
+        @ApiResponse(code = 200, message = "Success", response = BiodiversityOccurenceDTO[].class, responseHeaders = {
             @ResponseHeader(name = "X-Page-Total-Results", description = "Total number of species matching the given search criteria", response = Long.class),
             @ResponseHeader(name = "X-Page-Nr", description = "The page number used to fetch the results", response = Integer.class),
             @ResponseHeader(name = "X-Page-Limit", description = "The page limit used to fetch the results", response = Integer.class)
@@ -94,7 +95,7 @@ public class BiodiversityOccurenceController {
     @GetMapping("/{kingdom}")
     @Cacheable("species")
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Success", response = Species[].class, responseHeaders = {
+        @ApiResponse(code = 200, message = "Success", response = BiodiversityOccurenceDTO[].class, responseHeaders = {
             @ResponseHeader(name = "X-Page-Total-Results", description = "Total number of species matching the given search criteria", response = Long.class),
             @ResponseHeader(name = "X-Page-Nr", description = "The page number used to fetch the results", response = Integer.class),
             @ResponseHeader(name = "X-Page-Limit", description = "The page limit used to fetch the results", response = Integer.class)
@@ -130,9 +131,27 @@ public class BiodiversityOccurenceController {
         return new ResponseEntity<>(result.getOccurences(), headers, HttpStatus.OK);
     }
 
+    @GetMapping("/detail/{id}")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Success", response = BiodiversityOccurenceDTO.class),
+        @ApiResponse(code = 400, message = "Bad request", response = APIError[].class),
+        @ApiResponse(code = 500, message = "Internal Server Error", response = APIError[].class)
+    })
+    public BiodiversityOccurenceDTO findOne(
+        @ApiParam("Unique identifier of the occurence")
+        @PathVariable Long id) {
+        return service.findOne(id);
+    }
+
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler({FactoryException.class, TransformException.class})
     public List<APIError> handleBufferException(Exception ex) {
+        return Lists.newArrayList(new APIError(new String[] {ex.getClass().getName()}, ex.getMessage()));
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(BiodiversityNotFoundException.class)
+    public List<APIError> handleNotFoundException(BiodiversityNotFoundException ex) {
         return Lists.newArrayList(new APIError(new String[] {ex.getClass().getName()}, ex.getMessage()));
     }
 
