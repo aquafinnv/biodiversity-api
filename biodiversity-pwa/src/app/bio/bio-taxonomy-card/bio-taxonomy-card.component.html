@@ -1,0 +1,45 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Taxonomy</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <mat-list dense>
+      <mat-list-item>
+        <mat-icon mat-list-icon>subdirectory_arrow_right</mat-icon>
+        <h4 mat-line>{{specie?.kingdom}}</h4>
+        <p mat-line>Kingdom</p>
+      </mat-list-item>
+      <mat-list-item>
+        <mat-icon mat-list-icon>subdirectory_arrow_right</mat-icon>
+        <h4 mat-line>{{specie?.phylum}}</h4>
+        <p mat-line>Phylum</p>
+      </mat-list-item>
+      <mat-list-item>
+        <mat-icon mat-list-icon>subdirectory_arrow_right</mat-icon>
+        <h4 mat-line>{{specie?.speciesClass}}</h4>
+        <p mat-line>Class</p>
+      </mat-list-item>
+      <mat-list-item>
+        <mat-icon mat-list-icon>subdirectory_arrow_right</mat-icon>
+        <h4 mat-line>{{specie?.speciesOrder}}</h4>
+        <p mat-line>Order</p>
+      </mat-list-item>
+      <mat-list-item>
+        <mat-icon mat-list-icon>subdirectory_arrow_right</mat-icon>
+        <h4 mat-line>{{specie?.family}}</h4>
+        <p mat-line>Family</p>
+      </mat-list-item>
+      <mat-list-item *ngIf="specie?.genus != null">
+        <mat-icon mat-list-icon>subdirectory_arrow_right</mat-icon>
+        <h4 mat-line>{{specie.genus}}</h4>
+        <p mat-line>Genus</p>
+      </mat-list-item>
+      <mat-list-item *ngIf="specie?.subgenus != null && specie?.subgenus != ''">
+        <mat-icon mat-list-icon>subdirectory_arrow_right</mat-icon>
+        <h4 mat-line>{{specie.subgenus}}</h4>
+        <p mat-line>Subgenus</p>
+      </mat-list-item>
+    </mat-list>
+
+  </mat-card-content>
+</mat-card>

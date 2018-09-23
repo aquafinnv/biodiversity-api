@@ -1,0 +1,14 @@
+<agm-map [latitude]="center?.latitude" [longitude]="center?.longitude" [zoom]="15">
+  <agm-marker
+    *ngIf="character != null"
+    [latitude]="character.latitude"
+    [longitude]="character.longitude"
+    iconUrl="assets/character.gif">
+  </agm-marker>
+  <agm-marker
+    *ngFor="let marker of occurenceMarkers"
+    [latitude]="marker.occurence.latitude" [longitude]="marker.occurence.longitude"
+    [iconUrl]="marker.sprite"
+    (markerClick)="onSelect.emit(marker.occurence)">
+  </agm-marker>
+</agm-map>

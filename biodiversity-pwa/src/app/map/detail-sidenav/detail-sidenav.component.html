@@ -1,0 +1,16 @@
+<mat-sidenav-container>
+  <mat-sidenav #sidenav mode="side" opened [fixedInViewport]="true" position="end">
+    <mat-toolbar color="primary">
+      <a mat-icon-button title="Back to map" [routerLink]="['/map']">
+        <mat-icon class="example-icon">arrow_back</mat-icon>
+      </a>
+    </mat-toolbar>
+    <div class="content">
+      <app-bio-info-card [specie]="detail?.species"></app-bio-info-card>
+      <br />
+      <app-bio-location-card [occurence]="detail"></app-bio-location-card>
+      <br />
+      <app-bio-taxonomy-card [specie]="detail?.species"></app-bio-taxonomy-card>
+    </div>
+  </mat-sidenav>
+</mat-sidenav-container>

@@ -1,0 +1,12 @@
+<mat-card>
+  <img mat-card-image *ngIf="specie?.imageUrl != null" [src]="specie?.imageUrl">
+  <img mat-card-image *ngIf="specie?.imageUrl == null" src="assets/notfound.jpg">
+  <mat-card-header>
+    <mat-card-title>{{specie?.vernacularName}}</mat-card-title>
+    <mat-card-subtitle>{{specie?.scientificName}}</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-actions>
+    <button mat-button *ngIf="!isFavourite" (click)="updateFavourite()">FAVOURITE</button>
+    <button mat-button *ngIf="isFavourite" (click)="updateFavourite()">UNFAVOURITE</button>
+  </mat-card-actions>
+</mat-card>

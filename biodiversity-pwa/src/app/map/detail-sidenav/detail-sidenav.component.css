@@ -1,0 +1,10 @@
+mat-toolbar {
+  position: fixed;
+  top: 0;
+  z-index: 100;
+}
+
+.content {
+  margin-top: 70px;
+  padding: 10px;
+}

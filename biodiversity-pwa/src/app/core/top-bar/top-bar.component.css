@@ -1,0 +1,9 @@
+mat-toolbar {
+  position: absolute;
+  top: 0;
+}
+
+a {
+  color: white;
+  text-decoration: none;
+}
